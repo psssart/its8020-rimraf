@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "check.h"
+#include "remove.h"
 
 #include <errno.h>
 #include <getopt.h>
@@ -88,9 +89,8 @@ int main(int argc, char *argv[]) {
         return EXIT_USAGE;
     }
 
-    // Placeholders.
+    // Placeholder.
     (void)interactive;
-    (void)verbose;
 
     int status = EXIT_SUCCESS;
     for (int i = optind; i < argc; i++) {
@@ -98,7 +98,15 @@ int main(int argc, char *argv[]) {
             status = EXIT_FAILURE;
             continue;
         }
-        fprintf(stderr, "rimraf: not implemented yet: '%s'\n", argv[i]);
+        if (!remove_path(argv[i], verbose)) {
+            status = EXIT_FAILURE;
+        }
+    }
+
+    // With -v, a failed write to stdout means the user did not get the full report.
+    // errno may be stale if the error happened in an earlier write, so it is not printed.
+    if (fflush(stdout) == EOF || ferror(stdout)) {
+        fputs("rimraf: error writing to stdout\n", stderr);
         status = EXIT_FAILURE;
     }
     return status;
