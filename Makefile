@@ -6,7 +6,7 @@ WARNINGS = -Wall -Wextra -Wpedantic
 CFLAGS = -std=c17 $(WARNINGS) -O2
 SANITIZE = -fsanitize=address,undefined -fno-omit-frame-pointer
 
-OBJS = main.o
+OBJS = main.o check.o
 
 .PHONY: all debug format clean
 
@@ -23,3 +23,5 @@ format:
 
 clean:
 	rm -f rimraf $(OBJS)
+
+main.o check.o: check.h
