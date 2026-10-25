@@ -30,6 +30,27 @@ static void try_help(const char *argv0) {
     fprintf(stderr, "Try '%s --help' for more information.\n", argv0);
 }
 
+// Asks on stderr whether to remove path. EOF, a read error or any answer but y/Y/yes means no.
+static bool confirm(const char *path) {
+    fprintf(stderr, "rimraf: remove '%s' recursively? [y/N] ", path);
+
+    char answer[8];
+    if (fgets(answer, sizeof answer, stdin) == NULL) {
+        // Keep the next message off the prompt line.
+        fputc('\n', stderr);
+        return false;
+    }
+    size_t len = strcspn(answer, "\n");
+    if (answer[len] != '\n') {
+        // The rest of an over-long line must not become the answer to the next prompt.
+        int c;
+        while ((c = getchar()) != '\n' && c != EOF) {
+        }
+    }
+    answer[len] = '\0';
+    return strcmp(answer, "y") == 0 || strcmp(answer, "Y") == 0 || strcmp(answer, "yes") == 0;
+}
+
 // Strips trailing slashes from path in place and reports why it must not be removed.
 static bool path_allowed(char *path) {
     strip_trailing_slashes(path);
@@ -89,13 +110,14 @@ int main(int argc, char *argv[]) {
         return EXIT_USAGE;
     }
 
-    // Placeholder.
-    (void)interactive;
-
     int status = EXIT_SUCCESS;
     for (int i = optind; i < argc; i++) {
         if (!path_allowed(argv[i])) {
             status = EXIT_FAILURE;
+            continue;
+        }
+        // Answering "no" skips the path.
+        if (interactive && !confirm(argv[i])) {
             continue;
         }
         if (!remove_path(argv[i], verbose)) {
