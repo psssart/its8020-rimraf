@@ -1,0 +1,4 @@
+# SPDX-License-Identifier: MIT
+BasedOnStyle: LLVM
+IndentWidth: 4
+ColumnLimit: 100
