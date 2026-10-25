@@ -8,7 +8,7 @@ SANITIZE = -fsanitize=address,undefined -fno-omit-frame-pointer
 
 OBJS = main.o check.o fullpath.o remove.o
 
-.PHONY: all debug format clean
+.PHONY: all debug test format clean
 
 all: rimraf
 
@@ -17,6 +17,9 @@ rimraf: $(OBJS)
 
 debug: clean
 	$(MAKE) CFLAGS="-std=c17 $(WARNINGS) -g -O0 $(SANITIZE)" LDFLAGS="$(SANITIZE)"
+
+test: all
+	bash tests/run.sh ./rimraf
 
 format:
 	clang-format -i $(wildcard *.c *.h)
