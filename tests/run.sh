@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: MIT
+# Written with the help of Claude Code; reviewed by the author.
 #
 # Sandboxed tests for rimraf. Usage: tests/run.sh PATH-TO-RIMRAF
 # Every case runs in a fresh directory under a mktemp -d sandbox in /tmp.
